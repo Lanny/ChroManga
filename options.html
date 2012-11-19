@@ -1,0 +1,25 @@
+<html>
+  <head><title>WikiRSVP</title></head>
+  <script type="text/javascript">
+    function saveOptions() {
+      var WPM = document.getElementById('WPM').value
+      if (parseInt(WPM) == NaN) {
+        alert('Invalid words per minuite')
+        return
+      }
+      else {
+        localStorage.WPM = WPM
+        document.body.innerText = "Settings saved"
+      }
+    }
+    function restoreOptions() {
+      document.getElementById('WPM').value = localStorage['WPM']
+    }
+  </script>
+  <body onload="restoreOptions()">
+    Words per minute:<br />
+    <input id="WPM" type="text">
+    <br />
+    <button onClick="saveOptions()">Save</button>
+  </body>
+</html>

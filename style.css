@@ -1,0 +1,55 @@
+table {
+  width: 100%;
+  border-spacing: 0px;
+  font-family: sans-serif;
+}
+
+td:last-child, td:nth-child(2), th:last-child, th:nth-child(2) {
+  text-align: center;
+  width: 90px;
+}
+
+.even {
+  background-color: #ddd
+}
+
+#progress_div {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 1000;
+  background-color: #FFFFFF;
+  width: 600px;
+  margin-left: -300px;
+  height: 100px;
+  border: solid;
+  border-width: 1px;
+  border-color: #000000;
+  padding: 0px;
+}
+
+#progress_message {
+  position: relative;
+  top: 20px;
+  font-family: sans-serif;
+  font-size: 36px;
+  text-align: center;
+  color: #000;
+}
+
+#progress_bar {
+  position: absolute;
+  top: 80px;
+  height: 20px;
+  width: 100%;
+  text-align: center;
+  border-color: #000000;
+  border-top: solid;
+  border-bottom: solid;
+  border-width: 1px;
+  background-image: -webkit-linear-gradient(left, orange 0%, grey 5%);
+}
+
+.next {
+  cursor: pointer;
+}

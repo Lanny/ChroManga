@@ -1,0 +1,1 @@
+A chrome extension to download and view manga offline using IndexedDB. Capable of downloading manga from mangareader.net or loading zips.
