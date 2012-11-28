@@ -39,7 +39,6 @@ function removeElementFromStorage(storeName, index, callback) {
 }
 
 function purgeManga(index, callback) {
-  console.log(index)
   getElementFromStorage('manga', index, function(manga) {
     for (var i = manga.startIndex; i < manga.startIndex + manga.length; i++) {
       removeElementFromStorage('page', i, function(){})
@@ -130,7 +129,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
         'startIndex': lastIndex+1,
         'length': request.mangaLength
       }
-      console.log(request)
 
       addItemToDatabase('manga', manga, false)
 
@@ -165,7 +163,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     })
   }
   else if (request.action == "purge_manga") {
-    purgeManga(request.manga, function() {console.log('sent');sendResponse(null)})
+    var purged_count = 0
+    var k = request.manga_ids
+    for (var i = 0; i < k.length; i++) {
+      purgeManga(parseInt(k[i]), function() {
+        if (++purged_count == request.manga_ids.length) {
+          sendResponse(null)
+        }
+      })
+    }
   }
 });
 

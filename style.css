@@ -4,7 +4,7 @@ table {
   font-family: sans-serif;
 }
 
-td:last-child, td:nth-child(2), th:last-child, th:nth-child(2) {
+td:last-child, td:first-child, th:last-child, th:first-child {
   text-align: center;
   width: 90px;
 }
