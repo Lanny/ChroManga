@@ -1,7 +1,20 @@
+body {
+  font-family: sans-serif;
+}
+
+h1 {
+  margin: 2px;
+}
+
 table {
   width: 100%;
   border-spacing: 0px;
-  font-family: sans-serif;
+  font-family: arial, sans-serif;
+}
+
+label {
+  width: 60px;
+  float: left;
 }
 
 td:last-child, td:first-child, th:last-child, th:first-child {
@@ -11,6 +24,23 @@ td:last-child, td:first-child, th:last-child, th:first-child {
 
 .even {
   background-color: #ddd
+}
+
+.control_pane {
+  width: 48%;
+}
+
+.container {
+  width: 100%;
+}
+
+#output {
+  border: 1px solid black;
+  width: 500px;
+  height: 300px;
+  float: left;
+  font-family: monospace;
+  overflow: scroll;
 }
 
 #progress_div {

@@ -2,67 +2,61 @@ $(function() {
   $('#upload_button').click(function() {
     var input = document.getElementById('input')
     var series = $('#series_name').val()
-    var issue = $('#issue_number').val()
+    var issue = parseInt($('#issue_number').val())
 
     if (!input.files.length) {
       alert('No file selected')
       return
     }
+
+    $('#upload_button').add('#input').attr('disabled', 'disabled')
+
+    writeOut(input.files.length + ' files selected...');
 
     // http://gildas-lormeau.github.com/zip.js for when shit goes bad
-    extract(input.files[0], function(files, filenames) {
-      blobArrayToPageArray(files, series, issue, function(pages) {
-        chrome.extension.sendRequest({
-          'action': 'add_manga',
-          'mangaName': series,
-          'mangaIssue': issue,
-          'mangaLength': pages.length,
-          'pages': pages
-        }, 
-        function(response) {
-          alert(response)
-        })
-      })
-    })
-  })
-
-  $('#mupload_button').click(function() {
-    var input = document.getElementById('minput')
-    var series = $('#mseries_name').val()
-    var issue = parseInt($('#missue_number').val())
-
-    if (!input.files.length) {
-      alert('No file selected')
-      return
-    }
-
-    extract(input.files[0], function(tfiles, tfilenames) {
-      (function next(i) {
-        extract(tfiles[i], function(files, filenames) {
-          blobArrayToPageArray(files, series, parseInt(issue)+i, function(pages) {
-            console.log(pages[0])
-            chrome.extension.sendRequest({
-              'action': 'add_manga',
-              'mangaName': series,
-              'mangaIssue': pages[0].issue,
-              'mangaLength': pages.length,
-              'pages': pages
-            }, 
-            function(response) {
-              console.log('Done with ' + i)
-              if (++i < tfiles.length) next(i)
-              else alert('All done, yay!')
-            })
+    (function next(i) {
+      writeOut('Extracting ' + series + ' issue ' + (issue + i))
+      extract(input.files[i], function(files, filenames) {
+        writeOut('Extraction complete, begin serializing', 'green')
+        blobArrayToPageArray(files, series, issue, function(pages) {
+          writeOut('Serialization complete, submitting to database', 'green')
+          chrome.extension.sendRequest({
+            'action': 'add_manga',
+            'mangaName': series,
+            'mangaIssue': issue + i,
+            'mangaLength': pages.length,
+            'pages': pages
+          }, 
+          function(response) {
+            writeOut(series + ' ' + (issue+i) + ' added to ChroManga successfully\n', 'green')
+            if (++i < input.files.length) next(i)
+            else {
+              writeOut('All zips added successfully!', 'green')
+              $('#upload_button').add('#input').removeAttr('disabled')
+            }
           })
         })
-      })(0)
-    })
+      })
+    })(0)
   })
 })
+
+function writeOut(message, color) {
+  if (!color) var color = 'black'
+  $('pre').append(
+    $('<span>').css('color', color)
+      .text(message + '\n')
+  )
+  $('#output').scrollTop(999999)
+}
 
 function extract(file, callback) {
   zip.createReader(new zip.BlobReader(file), function(reader) {
     reader.getEntries(function(entries) {
+      var ProgBar = $('<span>')
+        .text('[          ]')
+        .appendTo($('pre'))
+
       entries.sort(function(a, b) {
         if (a.filename < b.filename) return -1
         if (a.filename > b.filename) return 1
@@ -76,7 +70,18 @@ function extract(file, callback) {
         entries[i].getData(new zip.BlobWriter(), function(blob) {
           files[i] = blob
           files.length++
+
+          var decas = Math.floor(files.length / entries.length * 10) + 1
+          var barText = '['
+          barText += Array(decas).join('=')
+          barText += '>'
+          barText += Array(11 - decas).join(' ')
+          barText += ']'
+
+          ProgBar.text(barText)
+
           if (files.length == entries.length) {
+            writeOut('\n')
             callback(files, filenames)
           }
         })
@@ -105,6 +110,7 @@ function blobArrayToPageArray(blobArray, series, issue, callback) {
       pages.length += 1
 
       if (pages.length == blobArray.length) {
+        writeOut('\t' + pages.length + ' pages serialized', 'green')
         callback(pages)
       }
     }
